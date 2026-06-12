@@ -1,0 +1,81 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #121212;
+    color: white;
+}
+
+.app {
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #1e1e1e;
+    border-bottom: 1px solid #333;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    height: calc(100vh - 72px);
+}
+
+.panel {
+    padding: 1rem;
+}
+
+.playlist-panel {
+    border-right: 1px solid #333;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.track-list {
+    list-style: none;
+    padding: 0;
+}
+
+.track {
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background: #1d1d1d;
+    border-radius: 8px;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.tabs button,
+.header button,
+.panel-header button {
+    cursor: pointer;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+}
+
+.content-view {
+    min-height: 400px;
+    background: #1d1d1d;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.placeholder {
+    opacity: 0.7;
+}
