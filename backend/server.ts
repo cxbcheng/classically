@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
+import session from 'express-session';
 import 'dotenv/config';
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
@@ -39,7 +39,23 @@ app.use(
     })
 );
 
-app.use(cookieParser());
+app.use(
+    session({
+        secret:
+            process.env.SESSION_SECRET ??
+            'spotify-session-secret',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            secure:
+                process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 300000
+        }
+    })
+);
+
 app.use(express.json());
 
 function generateRandomString(length: number): string {
@@ -50,17 +66,14 @@ function generateRandomString(length: number): string {
  * GET /login
  * Redirect user to Spotify authorization page
  */
-app.get('/login', (_req, res) => {
+app.get('/login', (req, res) => {
     const state = generateRandomString(16);
+    req.session.state = state;
 
-    res.cookie(stateKey, state, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 300000 // 300 seconds expiry
-    });
-
-    const scope = 'user-read-private user-read-email';
+    const scope = [
+        'user-read-private',
+        'user-read-email',
+    ].join(' ');
 
     const params = new URLSearchParams({
         response_type: 'code',
@@ -71,7 +84,7 @@ app.get('/login', (_req, res) => {
     });
 
     res.redirect(
-    `https://accounts.spotify.com/authorize?${params.toString()}`
+        `https://accounts.spotify.com/authorize?${params.toString()}`
     );
 });
 
