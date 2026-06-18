@@ -9,6 +9,10 @@ export default [
                 index: true,
                 lazy: () => import("./routes/home"),
             },
+            {
+                path: "*",
+                lazy: () => import("./routes/not-found"),
+            },
         ],
     },
     {
@@ -20,5 +24,5 @@ export default [
                 lazy: () => import("./routes/login"),
             }
         ]
-    }
+    },
 ];
