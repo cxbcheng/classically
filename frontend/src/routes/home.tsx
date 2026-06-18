@@ -1,28 +1,42 @@
 import {redirect} from "react-router";
 import {useLoaderData} from "react-router-dom";
 import {UserProfile} from "../../../shared/types/UserProfile";
+import {Navbar} from "../components/Navbar.tsx";
+
+interface ResponseObject {
+    profile: UserProfile;
+    playlists: any;
+}
 
 export async function loader() {
-    const response: Response = await fetch(
+    const resProfile: Response = await fetch(
         `${import.meta.env.VITE_BACKEND_URI}/api/me`, {
             credentials: "include",
         }
     );
 
-    if (response.status === 401) {
+    if (resProfile.status === 401) {
         return redirect('/login');
     }
 
-    return response.json();
+    const resPlaylists: Response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URI}/api/me/playlists`, {
+            credentials: "include",
+        }
+    );
+
+    return {
+        profile: await resProfile.json(),
+        playlists: await resPlaylists.json(),
+    };
 }
 
 export function Component() {
-    const profile: UserProfile = useLoaderData<UserProfile>();
-    console.log(profile);
+    const res: ResponseObject = useLoaderData<ResponseObject>();
 
     return (
-        <div>
-            <h1>Welcome, {profile.display_name}</h1>
-        </div>
+        <>
+            <Navbar profile={res.profile}/>
+        </>
     );
 }
