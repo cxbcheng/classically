@@ -1,4 +1,4 @@
-import {useLoaderData} from "react-router-dom";
+import {useLoaderData, useNavigate} from "react-router-dom";
 import {redirect} from "react-router";
 import {UserProfile} from "../../../shared/types/UserProfile.ts";
 import {Playlist, PlaylistItem} from "../../../shared/types/Playlist.ts";
@@ -41,9 +41,32 @@ export function Component() {
     const playlist: Playlist = res.playlist;
     const initialTracks: PlaylistItem[] = playlist.items?.items ?? [];
     const [tracks, setTracks] = useState<PlaylistItem[]>(initialTracks);
+    const navigate = useNavigate();
 
     function handleShuffle() {
         setTracks(classicalShuffle(tracks));
+    }
+
+    async function createShuffledPlaylist() {
+        const uris: string[] = tracks.map(track => track.item.uri);
+
+        const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URI}/api/playlists/${playlist.id}/create-shuffle`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({uris}),
+            }
+        );
+
+        const shuffledPlaylist = await response.json();
+        return navigate(`/playlists/${shuffledPlaylist.playlistId}`);
+    }
+
+    function revertShuffle() {
+        setTracks(initialTracks);
     }
 
     return (
@@ -85,11 +108,29 @@ export function Component() {
 
             <section className="playlist-actions">
                 <button
-                    className="shuffle-button"
+                    className="playlist-button playlist-button--shuffle"
                     aria-label="Shuffle playlist"
                     onClick={handleShuffle}
                 >
-                    ⇄
+                    <img
+                        src="/img/shuffle.png"
+                        alt="Shuffle playlist"
+                        className="playlist-button__icon"
+                    />
+                </button>
+
+                <button
+                    className="playlist-button playlist-button--secondary"
+                    onClick={revertShuffle}
+                >
+                    Revert
+                </button>
+
+                <button
+                    className="playlist-button playlist-button--primary"
+                    onClick={createShuffledPlaylist}
+                >
+                    Create Playlist
                 </button>
             </section>
 
