@@ -16,6 +16,10 @@ export default [
         ],
     },
     {
+        path: "/playlists/:playlistId",
+        lazy: () => import("./routes/playlist"),
+    },
+    {
         path: "/login",
         Component: Root,
         children: [

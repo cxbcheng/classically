@@ -3,10 +3,11 @@ import {useLoaderData} from "react-router-dom";
 import {UserProfile} from "../../../shared/types/UserProfile";
 import {Navbar} from "../components/Navbar.tsx";
 import {PlaylistGrid} from "../components/PlaylistGrid.tsx";
+import {Playlists} from "../../../shared/types/Playlist.ts";
 
 interface ResponseObject {
     profile: UserProfile;
-    playlists: any;
+    playlists: Playlists;
 }
 
 export async function loader() {
@@ -16,9 +17,7 @@ export async function loader() {
         }
     );
 
-    if (resProfile.status === 401) {
-        return redirect('/login');
-    }
+    if (resProfile.status === 401) return redirect('/login');
 
     const resPlaylists: Response = await fetch(
         `${import.meta.env.VITE_BACKEND_URI}/api/me/playlists`, {

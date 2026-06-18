@@ -1,16 +1,19 @@
 import {Playlist} from "../../../shared/types/Playlist.ts";
 import "../styles/playlist-grid.css";
+import {Link} from "react-router-dom";
+import {JSX} from "react";
 
 interface PlaylistGridProps {
     playlists: Playlist[];
 }
 
-export function PlaylistGrid({playlists}: PlaylistGridProps) {
+export function PlaylistGrid({playlists}: PlaylistGridProps): JSX.Element {
     return (
         <div className="playlist-grid">
             {playlists.map((playlist) => (
-                <div
+                <Link
                     key={playlist.id}
+                    to={`/playlists/${playlist.id}`}
                     className="playlist-card"
                 >
                     <img
@@ -32,7 +35,7 @@ export function PlaylistGrid({playlists}: PlaylistGridProps) {
                             {playlist.items.total} tracks
                         </p>
                     )}
-                </div>
+                </Link>
             ))}
         </div>
     );

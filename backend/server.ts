@@ -3,7 +3,7 @@ import cors from 'cors';
 import crypto from 'crypto';
 import session from 'express-session';
 import 'dotenv/config';
-import {getProfile, getUserPlaylists} from "./services/spotify";
+import {getPlaylist, getProfile, getUserPlaylists} from "./services/spotify";
 import {UserProfile} from "../shared/types/UserProfile";
 
 declare module 'express-session' {
@@ -266,7 +266,10 @@ app.post('/refresh_token', async (req, res) => {
  * Return current user profile data if authenticated, 401 status otherwise.
  */
 app.get("/api/me", async (req, res) => {
-    if (!req.session.spotify) return res.status(401).json({});
+    if (!req.session.spotify) return res.status(401).json({
+        error: 'unauthorized'
+    });
+
     const accessToken: string = req.session.spotify.access_token;
 
     const data: UserProfile = await getProfile(accessToken);
@@ -278,11 +281,40 @@ app.get("/api/me", async (req, res) => {
  * Return current user's playlists if authenticated, 401 status otherwise.
  */
 app.get("/api/me/playlists", async (req, res) => {
-    if (!req.session.spotify) return res.status(401).json({});
+    if (!req.session.spotify) return res.status(401).json({
+        error: 'unauthorized'
+    });
+
     const accessToken: string = req.session.spotify.access_token;
 
     const data = await getUserPlaylists(accessToken);
     res.json(data);
+});
+
+/**
+ * GET /api/playlists/:playlistId
+ * Return playlist data if authorized, 400 for missing playlist id, 500 for failed fetch.
+ */
+app.get("/api/playlists/:playlistId", async (req, res) => {
+    if (!req.session.spotify) return res.status(401).json({
+        error: 'unauthorized'
+    });
+
+    const accessToken: string = req.session.spotify.access_token;
+
+    const playlistId = req.params.playlistId;
+    if (!playlistId) return res.status(400).json({
+        error: 'missing_playlist_id'
+    });
+
+    try {
+        const playlist = await getPlaylist(accessToken, playlistId);
+        return res.json(playlist);
+    } catch (error) {
+        return res.status(500).json({
+            error: 'failed_to_fetch_playlist'
+        });
+    }
 });
 
 app.get('/health', (_req, res) => {
