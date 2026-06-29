@@ -41,15 +41,10 @@ Before installing QSpot, ensure you have:
 
 > **Note:** QSpot currently relies on Spotify Web API playback endpoints, which require a Spotify Premium account.
 
-Clone the repository:
+Clone the repository and install project dependencies:
 
 ```bash
 git clone https://github.com/cxbcheng/qspot.git
-```
-
-Install project dependencies:
-
-```bash
 cd qspot
 npm install
 ```
