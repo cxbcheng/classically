@@ -1,4 +1,4 @@
-import {Link, useLoaderData, useNavigate} from "react-router-dom";
+import {Link, useLoaderData, useLocation, useNavigate} from "react-router-dom";
 import {redirect} from "react-router";
 import {UserProfile} from "../../../shared/types/UserProfile.ts";
 import {Playlist, PlaylistItem} from "../../../shared/types/Playlist.ts";
@@ -45,11 +45,20 @@ export async function loader({params, request}: { params: { playlistId?: string 
 }
 
 export function Component() {
+    const navigate = useNavigate();
+    const location = useLocation();
+
     const res: ResponseObject = useLoaderData<ResponseObject>();
     const playlist: Playlist = res.playlist;
     const initialTracks: PlaylistItem[] = playlist.items?.items ?? [];
-    const [tracks, setTracks] = useState<PlaylistItem[]>(initialTracks);
-    const navigate = useNavigate();
+
+    // If quick shuffle is on, shuffle the tracks once from the original order
+    const [tracks, setTracks] = useState<PlaylistItem[]>(() => {
+        return location.state?.quickShuffle ? classicalShuffle(initialTracks) : initialTracks;
+    });
+
+    // Reset location state: no quick shuffling on re-renders
+    window.history.replaceState({}, "");
 
     function handleShuffle() {
         setTracks(classicalShuffle(tracks));

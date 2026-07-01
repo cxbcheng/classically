@@ -1,14 +1,14 @@
-import {Playlist} from "../../../shared/types/Playlist.ts";
+import { Playlist } from "../../../shared/types/Playlist.ts";
+import { Link } from "react-router-dom";
+import { JSX } from "react";
+import { GridShuffleButton } from "./GridShuffleButton.tsx";
 import "../styles/playlist-grid.css";
-import {Link} from "react-router-dom";
-import {JSX} from "react";
 
 interface PlaylistGridProps {
     playlists: Playlist[];
 }
 
-export function PlaylistGrid({playlists}: PlaylistGridProps): JSX.Element {
-    // Filter out empty playlists
+export function PlaylistGrid({ playlists }: PlaylistGridProps): JSX.Element {
     const filteredPlaylists = playlists.filter((playlist: Playlist) => !!playlist.items?.total);
 
     return (
@@ -19,13 +19,19 @@ export function PlaylistGrid({playlists}: PlaylistGridProps): JSX.Element {
                     to={`/playlists/${playlist.id}`}
                     className="playlist-card"
                 >
-                    <img
-                        src={
-                            playlist.images?.[0]?.url || "/img/spotify-playlist-blank-cover.png"
-                        }
-                        alt={playlist.name}
-                        className="playlist-card__image"
-                    />
+                    <div className="playlist-card__image-container">
+                        <img
+                            src={playlist.images?.[0]?.url || "/img/spotify-playlist-blank-cover.png"}
+                            alt={playlist.name}
+                            className="playlist-card__image"
+                        />
+                        <div className="playlist-card__overlay">
+                            <GridShuffleButton
+                                playlistId={playlist.id}
+                                playlistName={playlist.name}
+                            />
+                        </div>
+                    </div>
                     <p>{playlist.name}</p>
                     <p className="playlist-card__owner">{playlist.owner.display_name}</p>
                 </Link>

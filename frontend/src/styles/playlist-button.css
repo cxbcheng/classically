@@ -24,7 +24,7 @@
     align-items: center;
     justify-content: center;
     padding: 0;
-    background: var(--color-success);
+    background: var(--spotify-green);
     box-shadow: 0 8px 18px var(--color-success-shadow);
 }
 
@@ -34,6 +34,7 @@
 }
 
 .playlist-button__icon {
+    display: block;
     width: 24px;
     height: 24px;
     object-fit: contain;
