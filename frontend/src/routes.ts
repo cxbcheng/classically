@@ -29,4 +29,8 @@ export default [
             }
         ]
     },
+    {
+        path: "/setup/spotify",
+        lazy: () => import("./routes/setup-spotify.tsx"),
+    }
 ];

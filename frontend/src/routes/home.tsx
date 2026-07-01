@@ -17,7 +17,7 @@ export async function loader() {
     if (resProfile.status === 401) {
         throw redirect('/login');
     } else if (resProfile.status === 403) {
-        throw redirect('/error');
+        throw redirect('/setup/spotify');
     } else {
         console.log(resProfile.status);
     }
