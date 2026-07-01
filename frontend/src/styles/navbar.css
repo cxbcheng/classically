@@ -35,6 +35,18 @@
     object-fit: cover;
 }
 
+.navbar__profile-button {
+    background: transparent;
+    border: none;
+    padding: 6px;
+    margin: -6px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: flex;
+    align-items: center;
+}
+
 .navbar__name {
     font-size: var(--text-sm);
     font-weight: var(--weight-medium);
