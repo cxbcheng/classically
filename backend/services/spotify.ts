@@ -1,5 +1,6 @@
 import {UserProfile} from "../../shared/types/UserProfile";
 import {Playlist, Playlists} from "../../shared/types/Playlist";
+import { Buffer } from "buffer";
 
 const SPOTIFY_API = "https://api.spotify.com/v1";
 const SPOTIFY_ACCOUNTS_API = "https://accounts.spotify.com";
