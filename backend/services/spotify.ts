@@ -66,7 +66,6 @@ export async function exchangeAuthCodeForToken(
 
 /**
  * Uses a refresh token to request a new access token
- * @return { tokenResponse, body }
  */
 export async function refreshAccessToken(
     refreshToken: string,
