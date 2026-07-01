@@ -7,6 +7,7 @@ import {TrackList} from "../components/TrackList.tsx";
 import {classicalShuffle} from "../../../shared/utils/shuffle.ts";
 import {useState} from "react";
 import {PlayButton} from "../components/PlayButton.tsx";
+import {createShuffledPlaylist, fetchPlaylist, fetchProfile, startPlayback} from "../api/fetch.ts";
 
 interface ResponseObject {
     profile: UserProfile;
@@ -17,11 +18,7 @@ export async function loader({params, request}: { params: { playlistId?: string 
     const playlistId = params.playlistId;
     if (!playlistId) throw new Error('Missing playlist ID');
 
-    const resProfile: Response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URI}/api/me`, {
-            credentials: "include",
-        }
-    );
+    const resProfile: Response = await fetchProfile();
 
     if (resProfile.status === 401) {
         const url = new URL(request.url);
@@ -35,11 +32,7 @@ export async function loader({params, request}: { params: { playlistId?: string 
         throw redirect(`/login?callback=${encodeURIComponent(safeCallback)}`);
     }
 
-    const resPlaylist: Response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URI}/api/playlists/${playlistId}`, {
-            credentials: "include",
-        }
-    );
+    const resPlaylist: Response = await fetchPlaylist(playlistId);
 
     // Redirect to main page if playlist does not exist
     if (!resPlaylist.ok) return redirect('/');
@@ -61,20 +54,9 @@ export function Component() {
         setTracks(classicalShuffle(tracks));
     }
 
-    async function createShuffledPlaylist() {
+    async function handleCreateShuffledPlaylist() {
         const uris: string[] = tracks.map(track => track.item.uri);
-
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URI}/api/playlists/${playlist.id}/create-shuffle`, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({uris}),
-            }
-        );
-
+        const response = await createShuffledPlaylist(playlist.id, uris);
         const shuffledPlaylist = await response.json();
         return navigate(`/playlists/${shuffledPlaylist.playlistId}`);
     }
@@ -85,18 +67,7 @@ export function Component() {
 
     async function playShuffled(fromIndex: number = 0) {
         const uris: string[] = tracks.map(track => track.item.uri).splice(fromIndex);
-
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URI}/api/me/player/play`, {
-                method: "PUT",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({uris}),
-            }
-        );
-
+        const response = await startPlayback(uris);
         if (!response.ok) throw new Error("Failed to play shuffled playlist");
     }
 
@@ -167,7 +138,7 @@ export function Component() {
 
                 <button
                     className="playlist-button playlist-button--primary"
-                    onClick={createShuffledPlaylist}
+                    onClick={handleCreateShuffledPlaylist}
                 >
                     Create Playlist
                 </button>

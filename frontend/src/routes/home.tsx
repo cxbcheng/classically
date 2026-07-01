@@ -4,6 +4,7 @@ import {UserProfile} from "../../../shared/types/UserProfile";
 import {Navbar} from "../components/Navbar.tsx";
 import {PlaylistGrid} from "../components/PlaylistGrid.tsx";
 import {Playlists} from "../../../shared/types/Playlist.ts";
+import {fetchPlaylists, fetchProfile} from "../api/fetch.ts";
 
 interface ResponseObject {
     profile: UserProfile;
@@ -11,24 +12,20 @@ interface ResponseObject {
 }
 
 export async function loader() {
-    const resProfile: Response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URI}/api/me`, {
-            credentials: "include",
-        }
-    );
+    const resProfile: Response = await fetchProfile();
 
-    if (resProfile.status === 401) return redirect('/login');
+    if (resProfile.status === 401) {
+        throw redirect('/login');
+    } else if (resProfile.status === 403) {
+        throw redirect('/error');
+    } else {
+        console.log(resProfile.status);
+    }
 
-    const resPlaylists: Response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URI}/api/me/playlists`, {
-            credentials: "include",
-        }
-    );
-
-    return {
-        profile: await resProfile.json(),
-        playlists: await resPlaylists.json(),
-    };
+    const resPlaylists: Response = await fetchPlaylists();
+    const profile = await resProfile.json();
+    const playlists = await resPlaylists.json();
+    return {profile, playlists};
 }
 
 export function Component() {

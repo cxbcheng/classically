@@ -17,3 +17,29 @@ export async function fetchProfile(): Promise<Response> {
 export async function fetchPlaylists(): Promise<Response> {
     return _apiFetch("/api/me/playlists");
 }
+
+export async function fetchPlaylist(playlistId: string): Promise<Response> {
+    return _apiFetch(`/api/me/playlists/${playlistId}`);
+}
+
+export async function createShuffledPlaylist(
+    playlistId: string,
+    uris: string[],
+): Promise<Response> {
+    return _apiFetch(`/api/playlists/${playlistId}/create-shuffle`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ uris }),
+    });
+}
+
+
+export async function startPlayback(uris: string[]): Promise<Response> {
+    return await _apiFetch("/api/me/player/play", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uris }),
+    });
+}
