@@ -37,9 +37,7 @@ export async function createShuffledPlaylist(
 export async function startPlayback(uris: string[]): Promise<Response> {
     return await _apiFetch("/api/me/player/play", {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ uris }),
     });
 }
