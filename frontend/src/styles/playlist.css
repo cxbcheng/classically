@@ -39,9 +39,14 @@
 .playlist-name {
     font-family: var(--font-display), sans-serif;
     font-size: 4rem;
+    font-weight: var(--weight-semibold);
     line-height: 1;
     color: var(--color-heading);
     margin: 0;
+    transition: opacity var(--transition-fast);
+}
+.playlist-name:hover {
+    opacity: 0.9;
 }
 
 .playlist-description,

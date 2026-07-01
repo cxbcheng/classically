@@ -6,6 +6,10 @@ export interface Playlists {
 }
 
 export interface Playlist {
+    external_urls: {
+        spotify: string;
+    };
+    href: string;
     id: string;
     name: string;
     description: string;

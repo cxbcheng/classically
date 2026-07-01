@@ -1,4 +1,4 @@
-import {useLoaderData, useNavigate} from "react-router-dom";
+import {Link, useLoaderData, useNavigate} from "react-router-dom";
 import {redirect} from "react-router";
 import {UserProfile} from "../../../shared/types/UserProfile.ts";
 import {Playlist, PlaylistItem} from "../../../shared/types/Playlist.ts";
@@ -94,9 +94,9 @@ export function Component() {
                             Playlist
                         </p>
 
-                        <h1 className="playlist-name">
+                        <Link to={playlist.external_urls.spotify ?? ""} className="playlist-name" target="_blank">
                             {playlist.name}
-                        </h1>
+                        </Link>
 
                         {playlist.description && (
                             <p className="playlist-description">
