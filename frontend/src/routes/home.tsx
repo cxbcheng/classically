@@ -12,17 +12,11 @@ interface ResponseObject {
 }
 
 export async function loader() {
-    const resProfile: Response = await fetchProfile();
+    const [resProfile, resPlaylists] = await Promise.all([
+        fetchProfile(),
+        fetchPlaylists()
+    ]);
 
-    if (resProfile.status === 401) {
-        throw redirect('/login');
-    } else if (resProfile.status === 403) {
-        throw redirect('/setup/spotify');
-    } else {
-        console.log(resProfile.status);
-    }
-
-    const resPlaylists: Response = await fetchPlaylists();
     const profile = await resProfile.json();
     const playlists = await resPlaylists.json();
     return {profile, playlists};
