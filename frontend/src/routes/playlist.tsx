@@ -5,7 +5,7 @@ import {Playlist, PlaylistItem} from "../../../shared/types/Playlist.ts";
 import "../styles/playlist.css";
 import {TrackList} from "../components/TrackList.tsx";
 import {classicalShuffle} from "../../../shared/utils/shuffle.ts";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {PlayButton} from "../components/PlayButton.tsx";
 import {createShuffledPlaylist, fetchPlaylist, fetchProfile, startPlayback} from "../api/fetch.ts";
 import {Navbar} from "../components/Navbar.tsx";
@@ -52,9 +52,18 @@ export function Component() {
     const playlist: Playlist = res.playlist;
     const initialTracks: PlaylistItem[] = playlist.items?.items ?? [];
 
+    const playButtonRef = useRef<HTMLButtonElement>(null);
+
     // If quick shuffle is on, shuffle the tracks once from the original order
     const [tracks, setTracks] = useState<PlaylistItem[]>(() => {
         return location.state?.quickShuffle ? classicalShuffle(initialTracks) : initialTracks;
+    });
+
+    // Auto-focus play button after render if quick shuffle is on
+    useEffect(() => {
+        if (location.state?.quickShuffle && playButtonRef.current) {
+            playButtonRef.current.focus();
+        }
     });
 
     // Reset location state: no quick shuffling on re-renders
@@ -135,7 +144,7 @@ export function Component() {
                             alt="Shuffle playlist"
                             className="playlist-button__icon"/>
                     </button>
-                    <PlayButton isPlaying={false} onClick={handlePlayShuffled}/>
+                    <PlayButton isPlaying={false} onClick={handlePlayShuffled} ref={playButtonRef}/>
                     <button
                         className="playlist-button playlist-button--secondary"
                         onClick={revertShuffle}
