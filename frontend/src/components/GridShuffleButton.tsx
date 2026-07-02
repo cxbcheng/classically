@@ -21,7 +21,7 @@ export function GridShuffleButton({ playlistId, playlistName }: GridShuffleButto
             className="playlist-button playlist-button--shuffle playlist-card__action"
             onClick={onClick}
             aria-label={`Preview shuffle for ${playlistName}`}
-            title="Preview Shuffle"
+            title="Quick Shuffle"
         >
             <img
                 src="/img/shuffle.png"
