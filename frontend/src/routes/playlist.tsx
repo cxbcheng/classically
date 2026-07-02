@@ -53,21 +53,21 @@ export function Component() {
     const initialTracks: PlaylistItem[] = playlist.items?.items ?? [];
 
     const playButtonRef = useRef<HTMLButtonElement>(null);
+    const quickShuffle = !!location.state?.quickShuffle;
 
     // If quick shuffle is on, shuffle the tracks once from the original order
     const [tracks, setTracks] = useState<PlaylistItem[]>(() => {
-        return location.state?.quickShuffle ? classicalShuffle(initialTracks) : initialTracks;
+        return quickShuffle ? classicalShuffle(initialTracks) : initialTracks;
     });
 
-    // Auto-focus play button after render if quick shuffle is on
     useEffect(() => {
-        if (location.state?.quickShuffle && playButtonRef.current) {
-            playButtonRef.current.focus();
+        if (quickShuffle) {
+            playButtonRef.current?.focus();
         }
-    });
 
-    // Reset location state: no quick shuffling on re-renders
-    window.history.replaceState({}, "");
+        // Reset location state: no quick shuffling on re-renders
+        window.history.replaceState({}, "");
+    }, [quickShuffle]);
 
     function handleShuffle() {
         setTracks(classicalShuffle(tracks));
