@@ -15,6 +15,9 @@
     --color-text-muted: #6b4a46;
     --color-heading: #2a1719;
 
+    --color-link: #F18F01;
+    --color-link-hover: #D16F01;
+
     --color-success: #1db954;
     --color-success-hover: #1ed760;
     --color-success-shadow: rgba(29, 185, 84, 0.35);

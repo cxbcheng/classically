@@ -119,3 +119,11 @@ hr {
 .text-muted {
     color: var(--color-text-muted);
 }
+
+.hyperlink {
+    color: var(--color-link);
+}
+
+.hyperlink:hover {
+    color: var(--color-link-hover);
+}

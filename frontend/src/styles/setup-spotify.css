@@ -1,4 +1,5 @@
 @import "./theme.css";
+@import "./styles.css";
 
 .setup-spotify {
     background: var(--color-background);

@@ -2,6 +2,7 @@ import "../styles/setup-spotify.css";
 
 const SPOTIFY_DASHBOARD = "https://developer.spotify.com/dashboard";
 const GITHUB_URL = "https://github.com/cxbcheng/qspot";
+const SPOTIFY_API_RESTRICTIONS = "https://developer.spotify.com/documentation/web-api/concepts/quota-modes";
 
 export function Component() {
     return (
@@ -55,8 +56,7 @@ export function Component() {
                         <h2>Using the public demo?</h2>
 
                         <p>
-                            If you&rsquo;re on a hosted demo, this one&rsquo;s
-                            on us, not you &mdash; Spotify caps
+                            Due to Spotify's recent <a className="hyperlink" href={SPOTIFY_API_RESTRICTIONS} target="_blank" rel="noopener noreferrer">API restrictions</a>, Spotify caps
                             development-mode apps to an approved allowlist.
                         </p>
 
