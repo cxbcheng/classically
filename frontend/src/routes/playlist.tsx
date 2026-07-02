@@ -9,6 +9,7 @@ import {useEffect, useRef, useState} from "react";
 import {PlayButton} from "../components/PlayButton.tsx";
 import {createShuffledPlaylist, fetchPlaylist, fetchProfile, startPlayback} from "../api/fetch.ts";
 import {Navbar} from "../components/Navbar.tsx";
+import {Alert} from "../components/Alert.tsx";
 
 interface ResponseObject {
     profile: UserProfile;
@@ -55,6 +56,8 @@ export function Component() {
     const playButtonRef = useRef<HTMLButtonElement>(null);
     const quickShuffle = !!location.state?.quickShuffle;
 
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
     // If quick shuffle is on, shuffle the tracks once from the original order
     const [tracks, setTracks] = useState<PlaylistItem[]>(() => {
         return quickShuffle ? classicalShuffle(initialTracks) : initialTracks;
@@ -86,8 +89,16 @@ export function Component() {
 
     async function playShuffled(fromIndex: number = 0) {
         const uris: string[] = tracks.map(track => track.item.uri).splice(fromIndex);
+
         const response = await startPlayback(uris);
-        if (!response.ok) throw new Error("Failed to play shuffled playlist");
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                setErrorMessage("No active Spotify device found. Open Spotify on one of your devices and start playback there first.");
+            } else {
+                setErrorMessage(await response.json());
+            }
+        }
     }
 
     async function handlePlayShuffled() {
@@ -101,6 +112,15 @@ export function Component() {
     return (
         <><Navbar profile={res.profile} />
             <main className="playlist-page">
+                {errorMessage && (
+                    <Alert
+                        message={errorMessage}
+                        onDismiss={() => setErrorMessage(null)}
+                        targetRef={playButtonRef}
+                        duration={3000}
+                    />
+                )}
+
                 <header className="playlist-header">
                     <img
                         src={playlist.images?.[0]?.url || "/img/spotify-playlist-blank-cover.png"}
