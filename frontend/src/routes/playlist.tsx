@@ -20,21 +20,24 @@ export async function loader({params, request}: { params: { playlistId?: string 
     const playlistId = params.playlistId;
     if (!playlistId) throw new Error('Missing playlist ID');
 
-    const resProfile: Response = await fetchProfile();
-
-    if (resProfile.status === 401) {
-        const url = new URL(request.url);
-        const callback = url.pathname + url.search + url.hash;
-        const safeCallback =
-            callback &&
-            callback.startsWith("/") &&
-            !callback.startsWith("//")
-                ? callback
-                : "/";
-        throw redirect(`/login?callback=${encodeURIComponent(safeCallback)}`);
-    }
-
-    const resPlaylist: Response = await fetchPlaylist(playlistId);
+    const [resProfile, resPlaylist] = await Promise.all([
+        fetchProfile({
+            statusHandlers: {
+                401: () => {
+                    const url = new URL(request.url);
+                    const callback = url.pathname + url.search + url.hash;
+                    const safeCallback =
+                        callback &&
+                        callback.startsWith("/") &&
+                        !callback.startsWith("//")
+                            ? callback
+                            : "/";
+                    throw redirect(`/login?callback=${encodeURIComponent(safeCallback)}`);
+                }
+            }
+        }),
+        fetchPlaylist(playlistId)
+    ]);
 
     // Redirect to main page if playlist does not exist
     if (!resPlaylist.ok) return redirect('/');

@@ -1,4 +1,3 @@
-import {redirect} from "react-router";
 import {useLoaderData} from "react-router-dom";
 import {UserProfile} from "../../../shared/types/UserProfile";
 import {Navbar} from "../components/Navbar.tsx";
