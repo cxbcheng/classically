@@ -2,8 +2,11 @@ import {Device} from "../../../shared/types/Device";
 import {redirect} from "react-router";
 
 interface ApiOptions extends RequestInit {
-    // Callback for each status number.
-    statusHandlers?: Record<number, (res: Response) => any>;
+    // Callback for each status number. Use "*" as the key for a generic status handler.
+    statusHandlers?: {
+        [statusCode: number]: (res: Response) => void | Promise<void>;
+        "*"?: (res: Response) => void | Promise<void>;
+    };
 }
 
 // Helper function to fetch from API endpoints.
@@ -22,6 +25,11 @@ async function _apiFetch(path: string, options?: ApiOptions): Promise<Response> 
 
     if (statusHandlers && statusHandlers[res.status]) {
         await statusHandlers[res.status](res);
+        return res;
+    }
+
+    if (statusHandlers && statusHandlers["*"]) {
+        await statusHandlers["*"](res);
         return res;
     }
 
@@ -107,7 +115,7 @@ export async function transferPlayback(deviceId: string, play?: boolean, options
 
 // Look for devices before attempting to start playback.
 export async function attemptPlayback(uris: string[], options?: ApiOptions): Promise<Response> {
-    const {devices} = await (await fetchDevices()).json();
+    const {devices} = await (await fetchDevices(options)).json();
 
     if (devices.length > 0) {
         // Favor active device

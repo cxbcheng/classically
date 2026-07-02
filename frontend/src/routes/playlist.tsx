@@ -96,15 +96,16 @@ export function Component() {
     async function playShuffled(fromIndex: number = 0) {
         const uris: string[] = tracks.map(track => track.item.uri).splice(fromIndex);
 
-        const response = await attemptPlayback(uris);
-
-        if (!response.ok) {
-            if (response.status === 404) {
-                setErrorMessage("No active Spotify device found. Open Spotify on one of your devices and start playback there first.");
-            } else {
-                setErrorMessage(await response.json());
+        await attemptPlayback(uris, {
+            statusHandlers: {
+                404: () => {
+                    setErrorMessage("No active Spotify device found. Open Spotify on one of your devices and start playback there first.");
+                },
+                429: (res: Response) => {
+                    setErrorMessage(`${res.status}: ${res.statusText}`);
+                }
             }
-        }
+        });
     }
 
     async function handlePlayShuffled() {
