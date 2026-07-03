@@ -5,22 +5,7 @@ import {
     type ReactNode,
 } from "react";
 
-/**
- * SpotifyButton
- *
- * A full-redirect link styled as Spotify's own brand guidelines expect
- * (green field, black wordmark/icon) — intentionally kept visually separate
- * from Classically's coffee-brown identity so the button stays recognizable as
- * "the Spotify one" on a page that otherwise looks nothing like Spotify.
- *
- * Renders as a real <a> (not a client-side route) since Spotify OAuth
- * requires a full navigation to the backend's `/login` endpoint. A brief
- * "connecting" state gives immediate feedback after the click (Doherty
- * Threshold) for the moment before the browser actually navigates away.
- */
-export interface SpotifyButtonProps
-    extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
-    /** Destination URL, e.g. `${VITE_BACKEND_URI}/login`. */
+export interface SpotifyButtonProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
     href: string;
     children?: ReactNode;
 }
@@ -35,8 +20,6 @@ export function SpotifyButton({
     const [isConnecting, setIsConnecting] = useState(false);
 
     function handleClick(event: MouseEvent<HTMLAnchorElement>) {
-        // Ignore repeat activations (mouse or keyboard) once we're already
-        // navigating — there's nothing more useful a second click can do.
         if (isConnecting) {
             event.preventDefault();
             return;
