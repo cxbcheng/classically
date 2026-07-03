@@ -22,6 +22,12 @@
     border-radius: var(--radius-sm);
     color: var(--color-text);
 }
+.track-row:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px; /* Keeps the outline inside the row bounds */
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-alt);
+}
 
 .track-row .playlist-button--track-play {
     display: none;
