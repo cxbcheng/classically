@@ -42,6 +42,7 @@
     justify-content: center;
     opacity: 0;
     transition: opacity var(--transition-fast);
+    visibility: hidden;
 }
 
 .playlist-card__action {
@@ -67,6 +68,12 @@
 
 .playlist-card:hover .playlist-card__overlay {
     opacity: 1;
+    visibility: visible;
+}
+.playlist-card:hover .playlist-card__overlay,
+.playlist-card:focus-within .playlist-card__overlay {
+    opacity: 1;
+    visibility: visible; /* Restore keyboard interaction immediately upon hover or tab-focus */
 }
 
 .playlist-card:hover .playlist-card__action {
