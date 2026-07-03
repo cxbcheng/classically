@@ -6,13 +6,13 @@ import {Playlist, PlaylistItem} from "../../../shared/types/Playlist.ts";
 import "../styles/playlist.css";
 import {TrackList} from "../components/TrackList.tsx";
 import {classicalShuffle} from "../../../shared/utils/shuffle.ts";
+import {getLoginUrl} from "../../../shared/utils/safe-callback.ts";
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {PlayButton} from "../components/PlayButton.tsx";
 import {createShuffledPlaylist, fetchPlaylist, fetchProfile, attemptPlayback} from "../api/fetch.ts";
 import {Navbar} from "../components/Navbar.tsx";
 import {Alert} from "../components/Alert.tsx";
 import {useAsyncLock} from "../hooks/useAsyncLock.ts";
-import * as e from "cors";
 
 interface ResponseObject {
     profile: UserProfile;
@@ -27,15 +27,7 @@ export async function loader({params, request}: { params: { playlistId?: string 
         fetchProfile({
             statusHandlers: {
                 401: () => {
-                    const url = new URL(request.url);
-                    const callback = url.pathname + url.search + url.hash;
-                    const safeCallback =
-                        callback &&
-                        callback.startsWith("/") &&
-                        !callback.startsWith("//")
-                            ? callback
-                            : "/";
-                    throw redirect(`/login?callback=${encodeURIComponent(safeCallback)}`);
+                    throw redirect(getLoginUrl(new URL(request.url)));
                 }
             }
         }),
@@ -111,6 +103,9 @@ export function Component() {
 
         await attemptPlayback(uris, {
             statusHandlers: {
+                401: () => {
+                    navigate(getLoginUrl(location));
+                },
                 404: () => {
                     setErrorMessage("No active Spotify device found. Open Spotify on one of your devices and start playback there first.");
                 },
