@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 import { Alert } from "../components/Alert";
 import { SpotifyButton } from "../components/SpotifyButton";
 import "../styles/login.css";
@@ -21,13 +22,38 @@ export function Component() {
     const errorCode = searchParams.get("error");
     const errorMessage = getErrorMessage(errorCode);
     const callback = searchParams.get("callback");
+    const reason = searchParams.get("reason"); // Captures 'logout' flag
+
     const safeCallback = callback && callback.startsWith("/") && !callback.startsWith("//") ? callback : "/";
     const spotifyLoginUrl = `${import.meta.env.VITE_BACKEND_URI}/login?callback=${safeCallback}`;
+
+    useEffect(() => {
+        // Only auto-redirect if there is no error code and user didn't explicitly log out
+        if (!errorCode && reason !== "logout") {
+            window.location.href = spotifyLoginUrl;
+        }
+    }, [errorCode, reason, spotifyLoginUrl]);
 
     function handleDismissAlert() {
         const next = new URLSearchParams(searchParams);
         next.delete("error");
         setSearchParams(next, { replace: true });
+    }
+
+    if (!errorCode && reason !== "logout") {
+        return (
+            <main className="login-page">
+                <div className="login-page__glow" />
+                <section className="login-hero" style={{ opacity: 0.5, transition: "opacity 0.2s" }}>
+                    <div className="login-hero__content">
+                        <h1 className="login-hero__title">Classically</h1>
+                        <p className="login-hero__subtitle" style={{ fontSize: "var(--text-sm)" }}>
+                            Connecting to Spotify...
+                        </p>
+                    </div>
+                </section>
+            </main>
+        );
     }
 
     return (
@@ -37,7 +63,6 @@ export function Component() {
                 <div className="login-hero__content">
                     <p className="login-hero__eyebrow">Classical music served like a cup of coffee.</p>
                     <h1 className="login-hero__title">Classically</h1>
-                    {/*<p className="login-hero__subtitle">Playlist tools for classical music.</p>*/}
                 </div>
                 {errorMessage && <Alert message={errorMessage} onDismiss={handleDismissAlert} duration={3000} />}
                 <div className="login-hero__actions">

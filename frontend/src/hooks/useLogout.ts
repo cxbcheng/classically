@@ -5,6 +5,6 @@ export function useLogout() {
     const navigate = useNavigate();
     return async () => {
         await logOut();
-        navigate("/login", { replace: true });
+        navigate("/login?reason=logout", { replace: true });
     }
 }
